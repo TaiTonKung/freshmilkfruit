@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fresh Milk Fruit - ระบบสั่งซื้อแบบตะกร้าสินค้า</title>
+    <title>Fresh Milk Fruit - Shopping Cart</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style> 
@@ -28,13 +28,12 @@
         <h1 class="text-3xl md:text-4xl font-extrabold tracking-wide">🍓 FRESH MILK FRUIT</h1>
         <p class="text-sm opacity-90 mt-1">รับของวันที่ 06/08/2026</p>
         
-        <!-- สถานะจุดเขียววิบวับ -->
         <div class="mt-2 inline-flex items-center gap-2 bg-black/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
             <span class="relative flex h-2.5 w-2.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 animate-pulse-green"></span>
             </span>
-            <span class="text-xs font-medium text-emerald-200 tracking-wider">สถานะ: เชื่อมต่อ Cloud Realtime อัปเดตสดทุกเครื่อง</span>
+            <span class="text-xs font-medium text-emerald-200 tracking-wider">ระบบสั่งซื้อสินค้าออนไลน์</span>
         </div>
     </header>
 
@@ -46,25 +45,29 @@
                 <span>🛍️</span> เมนูเครื่องดื่มทั้งหมด
             </h2>
             <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div class="col-span-4 text-center py-8 text-slate-400">กำลังโหลดข้อมูลสต็อก...</div>
+                <div class="col-span-4 text-center py-8 text-slate-400">กำลังโหลดข้อมูลสินค้า...</div>
             </div>
         </section>
 
-        <!-- 2. ตรวจสอบรายการสั่งซื้อทั้งหมด -->
+        <!-- 2. ตรวจสอบรายการสั่งซื้อเฉพาะของคุณ (ฝั่งลูกค้าเห็นเฉพาะของตัวเอง) -->
         <section class="bg-white rounded-2xl shadow p-6 border border-slate-100">
-            <h3 class="font-bold text-lg text-slate-800 mb-1">📋 ตรวจสอบรายการสั่งซื้อทั้งหมด</h3>
-            <p class="text-xs text-slate-400 mb-4">รูปแบบ: ชื่อ / ห้อง / เวลา / รายการสินค้าและจำนวน</p>
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                    <span>📦</span> รายการสั่งซื้อของคุณ (เฉพาะเครื่องนี้)
+                </h3>
+                <span class="text-[10px] bg-purple-100 text-purple-700 px-2.5 py-1 rounded-full font-bold">เฉพาะประวัติสั่งซื้อของคุณ</span>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm border-collapse">
                     <thead>
-                        <tr class="text-slate-400 border-b border-slate-200">
+                        <tr class="text-slate-400 border-b border-slate-200 text-xs">
                             <th class="pb-2">#</th>
-                            <th class="pb-2">รายการบันทึกออเดอร์</th>
-                            <th class="pb-2">ราคารวม</th>
+                            <th class="pb-2">รายการสั่งซื้อ</th>
+                            <th class="pb-2 text-right">ราคารวม</th>
                         </tr>
                     </thead>
-                    <tbody id="clientOrderTable" class="divide-y divide-slate-100">
-                        <tr><td colspan="3" class="text-center py-4 text-slate-400">กำลังโหลดข้อมูลออเดอร์...</td></tr>
+                    <tbody id="myOrderTable" class="divide-y divide-slate-100">
+                        <tr><td colspan="3" class="text-center py-4 text-slate-400">ยังไม่มีประวัติการสั่งซื้อของคุณ</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -73,14 +76,14 @@
         <!-- ปุ่มเข้าแผงแอดมิน -->
         <div class="text-center pt-4">
             <button onclick="openAdminPasswordModal()" class="bg-slate-800 hover:bg-slate-900 text-slate-200 text-xs px-4 py-2 rounded-xl shadow transition-all active:scale-95">
-                🔒 สำหรับเจ้าของร้าน (จัดการสต็อก / แก้ไข / ลบข้อมูล)
+                🔒 สำหรับเจ้าของร้าน (จัดการสต็อก / ดูออเดอร์ทั้งหมด)
             </button>
         </div>
 
-        <!-- 3. แผงควบคุมเจ้าของร้าน -->
+        <!-- 3. แผงควบคุมเจ้าของร้าน (เห็นออเดอร์ของทุกคน) -->
         <section id="adminSection" class="bg-slate-900 text-slate-100 rounded-2xl shadow-xl p-6 hidden space-y-6 border border-slate-700">
             <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-                <h3 class="font-bold text-lg text-amber-400">⚙️ แผงควบคุมเจ้าของร้าน</h3>
+                <h3 class="font-bold text-lg text-amber-400">⚙️ แผงควบคุมเจ้าของร้าน (Admin)</h3>
                 <button onclick="closeAdminPanel()" class="text-xs text-slate-400 hover:text-white">✕ ปิดหน้าแอดมิน</button>
             </div>
 
@@ -94,15 +97,15 @@
 
             <div>
                 <div class="flex justify-between items-center mb-3">
-                    <h4 class="text-sm font-bold text-amber-400">✏️ จัดการ และลบรายการสั่งซื้อ</h4>
-                    <button onclick="clearAllOrders()" class="text-xs text-rose-400 hover:underline">ล้างข้อมูลทั้งหมด</button>
+                    <h4 class="text-sm font-bold text-amber-400">📋 รายการสั่งซื้อของลูกค้าทุกคน</h4>
+                    <button onclick="clearAllOrders()" class="text-xs text-rose-400 hover:underline">ล้างออเดอร์ทั้งหมด</button>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
                         <thead>
                             <tr class="text-slate-400 border-b border-slate-700">
                                 <th class="pb-2">#</th>
-                                <th class="pb-2">รายการสั่งซื้อ</th>
+                                <th class="pb-2">รายการสั่งซื้อ (ชื่อ/ห้อง/เวลา/สินค้า)</th>
                                 <th class="pb-2">ราคารวม</th>
                                 <th class="pb-2 text-right">จัดการ</th>
                             </tr>
@@ -115,7 +118,7 @@
 
     </main>
 
-    <!-- 🛒 ปุ่มเปิดตะกร้าลอยด้านล่าง (Floating Cart Button) -->
+    <!-- 🛒 ปุ่มเปิดตะกร้าลอยด้านล่าง -->
     <div class="fixed bottom-5 right-5 z-40">
         <button onclick="toggleCartModal()" class="relative bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transition-transform active:scale-90">
             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
@@ -123,7 +126,7 @@
         </button>
     </div>
 
-    <!-- 🛒 Modal ตะกร้าสินค้าและการชำระเงิน (Cart Drawer / Modal) -->
+    <!-- 🛒 Modal ตะกร้าสินค้า -->
     <div id="cartModal" class="fixed inset-0 bg-black/60 hidden flex justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center border-b pb-3 mb-3">
@@ -131,12 +134,10 @@
                 <button onclick="toggleCartModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
             </div>
 
-            <!-- รายการในตะกร้า -->
             <div id="cartItemsList" class="flex-1 overflow-y-auto space-y-3 pr-1 mb-4">
                 <div class="text-center py-8 text-slate-400 text-sm">ยังไม่มีสินค้าในตะกร้า</div>
             </div>
 
-            <!-- ฟอร์มกรอกข้อมูลการจัดส่ง -->
             <form onsubmit="checkoutCart(event)" class="space-y-3 border-t pt-3">
                 <div class="grid grid-cols-3 gap-2 text-xs">
                     <div>
@@ -182,7 +183,7 @@
         </div>
     </div>
 
-    <!-- JavaScript + Realtime Database & Cart Logic -->
+    <!-- JavaScript & Realtime Logic -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBI8prK3gpAIRGmu5FWrQD9zG2bSCVwqk0",
@@ -208,9 +209,9 @@
 
         let products = [];
         let orders = [];
-        let cart = []; // [{ id, name, price, qty, stock }]
+        let cart = [];
 
-        // 🔄 ดึงข้อมูล Realtime
+        // 🔄 ดึงข้อมูลสินค้า Realtime
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val();
             if (!data) {
@@ -224,14 +225,14 @@
             if (!document.getElementById('adminSection').classList.contains('hidden')) renderAdminControls();
         });
 
+        // 🔄 ดึงออเดอร์ทั้งหมดสำหรับ Admin
         db.ref('orders').on('value', (snapshot) => {
             const data = snapshot.val();
             orders = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-            renderClientOrders();
+            renderMyOrders(); // อัปเดตตารางของลูกค้า
             if (!document.getElementById('adminSection').classList.contains('hidden')) renderAdminControls();
         });
 
-        // แสดงผลสินค้า
         function renderProducts() {
             const grid = document.getElementById('productGrid');
             grid.innerHTML = products.map(p => {
@@ -259,7 +260,7 @@
             `}).join('');
         }
 
-        // 🛒 ตะกร้าสินค้า (Cart Logic)
+        // 🛒 Cart Logic
         function addToCart(productId) {
             const product = products.find(p => p.id === productId);
             if (!product) return;
@@ -275,7 +276,6 @@
             } else {
                 cart.push({ ...product, qty: 1 });
             }
-
             renderProducts();
             renderCartUI();
         }
@@ -286,14 +286,8 @@
             if (!item || !product) return;
 
             item.qty += delta;
-            if (item.qty > product.stock) {
-                item.qty = product.stock;
-                alert("จำนวนสินค้าสูงสุดตามสต็อกที่มีอยู่");
-            }
-
-            if (item.qty <= 0) {
-                cart = cart.filter(i => i.id !== productId);
-            }
+            if (item.qty > product.stock) item.qty = product.stock;
+            if (item.qty <= 0) cart = cart.filter(i => i.id !== productId);
 
             renderProducts();
             renderCartUI();
@@ -309,7 +303,6 @@
             const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
             const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
             
-            // Badge
             const badge = document.getElementById('cartBadge');
             if (totalItems > 0) {
                 badge.innerText = totalItems;
@@ -318,7 +311,6 @@
                 badge.classList.add('hidden');
             }
 
-            // List in Modal
             const list = document.getElementById('cartItemsList');
             if (cart.length === 0) {
                 list.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">ยังไม่มีสินค้าในตะกร้า</div>`;
@@ -352,11 +344,11 @@
             document.getElementById('cartModal').classList.toggle('hidden');
         }
 
-        // ยืนยันสั่งซื้อสินค้าในตะกร้า (Checkout)
+        // ยืนยันการสั่งซื้อ
         async function checkoutCart(e) {
             e.preventDefault();
             if (cart.length === 0) {
-                alert("กรุณาเลือกสินค้าใส่ตะกร้าก่อนสั่งซื้อครับ!");
+                alert("กรุณาเลือกสินค้าใส่ตะกร้าก่อนสั่งซื้อ!");
                 return;
             }
 
@@ -368,14 +360,11 @@
             const room = document.getElementById('custRoom').value.trim();
             const time = document.getElementById('custTime').value;
 
-            // 1. สร้าง String สรุปเมนูสินค้า เช่น "สตรอเบอร์รี่ 2 พีช 2"
             const itemsSummary = cart.map(item => `${item.name} ${item.qty}`).join(' ');
-            
-            // 2. สร้าง Code รูปแบบ: "ไตตั้น / 163 / เช้า / สตรอเบอร์รี่ 2 พีช 2"
             const orderCode = `${name} / ${room} / ${time} / ${itemsSummary}`;
             const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-            // 3. ตัดสต็อกสินค้าใน Firebase Cloud
+            // 1. ตัดสต็อก
             cart.forEach(cartItem => {
                 const pIndex = products.findIndex(p => p.id === cartItem.id);
                 if (pIndex !== -1) {
@@ -385,36 +374,61 @@
             });
             await db.ref('products').set(products);
 
-            // 4. บันทึกคำสั่งซื้อเข้า Database
-            await db.ref('orders').push({
+            // 2. บันทึกคำสั่งซื้อลง Firebase
+            const newOrderRef = db.ref('orders').push();
+            const orderId = newOrderRef.key;
+            await newOrderRef.set({
                 code: orderCode,
                 total: totalAmount,
                 details: { name, room, time, cartItems: cart }
             });
 
-            // ล้างตะกร้า ปิด Modal
+            // 3. บันทึก ID ออเดอร์ลง LocalStorage เครื่องลูกค้าคนนี้
+            saveMyOrderId(orderId);
+
             cart = [];
             renderProducts();
             renderCartUI();
+            renderMyOrders();
+
             btn.disabled = false;
             btn.innerText = "ยืนยันสั่งซื้อสินค้า";
             toggleCartModal();
             alert("สั่งซื้อสำเร็จเรียบร้อยแล้ว!");
         }
 
-        // แสดงผลรายการสั่งซื้อทั้งหมด (Client View)
-        function renderClientOrders() {
-            const tbody = document.getElementById('clientOrderTable');
-            tbody.innerHTML = orders.map((o, i) => `
+        // 🔒 ระบบจำออเดอร์เฉพาะเครื่องลูกค้า (LocalStorage)
+        function getMyOrderIds() {
+            return JSON.parse(localStorage.getItem('my_fruit_orders') || '[]');
+        }
+
+        function saveMyOrderId(id) {
+            const current = getMyOrderIds();
+            current.push(id);
+            localStorage.setItem('my_fruit_orders', JSON.stringify(current));
+        }
+
+        // แสดงผลออเดอร์เฉพาะของลูกค้าเครื่องนี้
+        function renderMyOrders() {
+            const myIds = getMyOrderIds();
+            const myOrders = orders.filter(o => myIds.includes(o.id));
+            const tbody = document.getElementById('myOrderTable');
+
+            if (myOrders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-slate-400">ยังไม่มีประวัติการสั่งซื้อของคุณ</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = myOrders.map((o, i) => `
                 <tr class="border-b border-slate-100">
                     <td class="py-2.5 font-bold text-slate-400">${i + 1}</td>
                     <td class="font-semibold text-purple-700 font-mono text-xs md:text-sm">${o.code}</td>
-                    <td class="font-bold text-emerald-600">${o.total} ฿</td>
+                    <td class="font-bold text-emerald-600 text-right">${o.total} ฿</td>
                 </tr>
-            `).join('') || '<tr><td colspan="3" class="text-center py-4 text-slate-400">ยังไม่มีรายการสั่งซื้อ</td></tr>';
+            `).join('');
         }
 
-        // Admin Modal & Operations
+        // Admin Modals & Functions
         function openAdminPasswordModal() {
             document.getElementById('adminPassInput').value = '';
             document.getElementById('passModal').classList.remove('hidden');
