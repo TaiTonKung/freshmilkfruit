@@ -12,9 +12,8 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(1.15); }
         }
-        .animate-pulse-green {
-            animation: pulse-fast 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
+        .animate-pulse-green { animation: pulse-fast 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .animate-pulse-red { animation: pulse-fast 1s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
     
     <!-- Firebase SDKs -->
@@ -28,18 +27,15 @@
         <h1 class="text-3xl md:text-4xl font-extrabold tracking-wide">🍓 FRESH MILK FRUIT</h1>
         <p class="text-sm opacity-90 mt-1">รับของวันที่ 06/08/2026</p>
         
-        <div class="mt-2 inline-flex items-center gap-2 bg-black/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-            <span class="relative flex h-2.5 w-2.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 animate-pulse-green"></span>
-            </span>
-            <span class="text-xs font-medium text-emerald-200 tracking-wider">ระบบสั่งซื้อสินค้าออนไลน์</span>
+        <!-- แถบสถานะร้านค้า (อัปเดตตามการเปิด-ปิดร้าน) -->
+        <div id="storeStatusBadge" class="mt-2 inline-flex items-center gap-2 bg-black/20 backdrop-blur-md px-3.5 py-1 rounded-full border border-white/20 transition-all">
+            <span class="text-xs font-medium text-slate-200">กำลังโหลดสถานะร้าน...</span>
         </div>
     </header>
 
     <main class="max-w-4xl mx-auto px-4 mt-6 space-y-8">
 
-        <!-- 1. รายการสินค้า (Shopping Cards) -->
+        <!-- 1. รายการสินค้า -->
         <section>
             <h2 class="text-xl font-bold mb-4 text-slate-800 flex items-center gap-2">
                 <span>🛍️</span> เมนูเครื่องดื่มทั้งหมด
@@ -49,13 +45,13 @@
             </div>
         </section>
 
-        <!-- 2. ตรวจสอบรายการสั่งซื้อเฉพาะของคุณ (ฝั่งลูกค้าเห็นเฉพาะของตัวเอง) -->
+        <!-- 2. ตรวจสอบรายการสั่งซื้อเฉพาะของคุณ -->
         <section class="bg-white rounded-2xl shadow p-6 border border-slate-100">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
                     <span>📦</span> รายการสั่งซื้อของคุณ (เฉพาะเครื่องนี้)
                 </h3>
-                <span class="text-[10px] bg-purple-100 text-purple-700 px-2.5 py-1 rounded-full font-bold">เฉพาะประวัติสั่งซื้อของคุณ</span>
+                <span class="text-[10px] bg-purple-100 text-purple-700 px-2.5 py-1 rounded-full font-bold">ประวัติของคุณ</span>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm border-collapse">
@@ -76,17 +72,29 @@
         <!-- ปุ่มเข้าแผงแอดมิน -->
         <div class="text-center pt-4">
             <button onclick="openAdminPasswordModal()" class="bg-slate-800 hover:bg-slate-900 text-slate-200 text-xs px-4 py-2 rounded-xl shadow transition-all active:scale-95">
-                🔒 สำหรับเจ้าของร้าน (จัดการสต็อก / ดูออเดอร์ทั้งหมด)
+                🔒 สำหรับเจ้าของร้าน (ตั้งค่าสถานะร้าน / สต็อก / จัดการออเดอร์)
             </button>
         </div>
 
-        <!-- 3. แผงควบคุมเจ้าของร้าน (เห็นออเดอร์ของทุกคน) -->
+        <!-- 3. แผงควบคุมเจ้าของร้าน -->
         <section id="adminSection" class="bg-slate-900 text-slate-100 rounded-2xl shadow-xl p-6 hidden space-y-6 border border-slate-700">
             <div class="flex justify-between items-center border-b border-slate-700 pb-3">
                 <h3 class="font-bold text-lg text-amber-400">⚙️ แผงควบคุมเจ้าของร้าน (Admin)</h3>
                 <button onclick="closeAdminPanel()" class="text-xs text-slate-400 hover:text-white">✕ ปิดหน้าแอดมิน</button>
             </div>
 
+            <!-- สวิตช์ เปิด/ปิด ร้าน -->
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
+                <div>
+                    <h4 class="text-sm font-bold text-amber-400">🚨 ตั้งค่าสถานะร้านค้า</h4>
+                    <p class="text-xs text-slate-400">ปิดร้านเพื่อระงับการสั่งซื้อชั่วคราวโดยไม่ต้องปรับสต็อก</p>
+                </div>
+                <button id="toggleStoreBtn" onclick="toggleStoreOpen()" class="px-4 py-2 rounded-xl font-bold text-xs shadow transition-all">
+                    กำลังดึงข้อมูล...
+                </button>
+            </div>
+
+            <!-- ตั้งค่าสต็อก -->
             <div>
                 <h4 class="text-sm font-bold text-slate-300 mb-3">📦 ตั้งค่าจำนวนสต็อกคงเหลือ (Stocks)</h4>
                 <div id="stockControlGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
@@ -95,6 +103,7 @@
                 </button>
             </div>
 
+            <!-- ตารางจัดการออเดอร์ -->
             <div>
                 <div class="flex justify-between items-center mb-3">
                     <h4 class="text-sm font-bold text-amber-400">📋 รายการสั่งซื้อของลูกค้าทุกคน</h4>
@@ -170,6 +179,26 @@
         </div>
     </div>
 
+    <!-- ✏️ Modal แก้ไขออเดอร์ (สำหรับแอดมิน) -->
+    <div id="editOrderModal" class="fixed inset-0 bg-black/70 hidden flex justify-center items-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-5 shadow-2xl text-slate-100 space-y-4">
+            <h3 class="font-bold text-base text-amber-400">✏️ แก้ไขรายการสั่งซื้อ</h3>
+            <input type="hidden" id="editOrderId">
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">ข้อความรายการสั่งซื้อ:</label>
+                <input type="text" id="editOrderCode" class="w-full p-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-purple-300 font-mono outline-none focus:ring-1 focus:ring-amber-400">
+            </div>
+            <div>
+                <label class="block text-xs text-slate-400 mb-1">ราคารวม (บาท):</label>
+                <input type="number" id="editOrderTotal" class="w-full p-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-emerald-400 font-bold outline-none focus:ring-1 focus:ring-amber-400">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeEditModal()" class="w-1/2 py-2 border border-slate-700 rounded-xl text-xs text-slate-400">ยกเลิก</button>
+                <button onclick="saveEditOrder()" class="w-1/2 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs">บันทึกแก้ไข</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Admin Pass Modal -->
     <div id="passModal" class="fixed inset-0 bg-black/70 hidden flex justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xs w-full p-5 shadow-2xl text-slate-100 text-center space-y-4">
@@ -210,6 +239,15 @@
         let products = [];
         let orders = [];
         let cart = [];
+        let isStoreOpen = true;
+
+        // 🔄 ดึงสถานะเปิด-ปิดร้าน Realtime
+        db.ref('storeOpen').on('value', (snapshot) => {
+            const val = snapshot.val();
+            isStoreOpen = (val === null) ? true : val;
+            renderStoreStatusUI();
+            renderProducts();
+        });
 
         // 🔄 ดึงข้อมูลสินค้า Realtime
         db.ref('products').on('value', (snapshot) => {
@@ -225,13 +263,46 @@
             if (!document.getElementById('adminSection').classList.contains('hidden')) renderAdminControls();
         });
 
-        // 🔄 ดึงออเดอร์ทั้งหมดสำหรับ Admin
+        // 🔄 ดึงออเดอร์ทั้งหมด
         db.ref('orders').on('value', (snapshot) => {
             const data = snapshot.val();
             orders = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-            renderMyOrders(); // อัปเดตตารางของลูกค้า
+            renderMyOrders();
             if (!document.getElementById('adminSection').classList.contains('hidden')) renderAdminControls();
         });
+
+        // แสดงผลสถานะเปิด-ปิดร้าน
+        function renderStoreStatusUI() {
+            const badge = document.getElementById('storeStatusBadge');
+            const toggleBtn = document.getElementById('toggleStoreBtn');
+
+            if (isStoreOpen) {
+                badge.innerHTML = `
+                    <span class="relative flex h-2.5 w-2.5">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 animate-pulse-green"></span>
+                    </span>
+                    <span class="text-xs font-medium text-emerald-200 tracking-wider">เปิดรับออเดอร์ตามปกติ</span>
+                `;
+                toggleBtn.innerText = "🟢 ร้านเปิดอยู่ (กดเพื่อปิดร้าน)";
+                toggleBtn.className = "px-4 py-2 rounded-xl font-bold text-xs shadow transition-all bg-emerald-500 hover:bg-emerald-600 text-slate-950";
+            } else {
+                badge.innerHTML = `
+                    <span class="relative flex h-2.5 w-2.5">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500 animate-pulse-red"></span>
+                    </span>
+                    <span class="text-xs font-bold text-rose-200 tracking-wider">🔴 ร้านปิดรับออเดอร์แล้วครับ</span>
+                `;
+                toggleBtn.innerText = "🔴 ร้านปิดอยู่ (กดเพื่อเปิดร้าน)";
+                toggleBtn.className = "px-4 py-2 rounded-xl font-bold text-xs shadow transition-all bg-rose-600 hover:bg-rose-700 text-white";
+            }
+        }
+
+        async function toggleStoreOpen() {
+            isStoreOpen = !isStoreOpen;
+            await db.ref('storeOpen').set(isStoreOpen);
+        }
 
         function renderProducts() {
             const grid = document.getElementById('productGrid');
@@ -239,6 +310,9 @@
                 const cartItem = cart.find(item => item.id === p.id);
                 const inCartQty = cartItem ? cartItem.qty : 0;
                 const availableStock = p.stock - inCartQty;
+                
+                // ถ้าร้านปิด ให้กดสั่งไม่ได้เลย
+                const canBuy = isStoreOpen && availableStock > 0;
 
                 return `
                 <div class="bg-white p-4 rounded-2xl shadow border border-slate-100 text-center flex flex-col justify-between transition-transform active:scale-98">
@@ -251,9 +325,9 @@
                         <span class="text-xs ${p.stock > 0 ? 'bg-slate-100 text-slate-600' : 'bg-rose-100 text-rose-600'} px-2 py-1 rounded-full block mb-3 font-semibold">
                             ${p.stock > 0 ? 'เหลือ ' + p.stock + ' ขวด' : 'สินค้าหมด'}
                         </span>
-                        <button onclick="addToCart('${p.id}')" ${availableStock <= 0 ? 'disabled' : ''} 
-                            class="w-full py-2 rounded-xl text-xs font-bold text-white transition-all shadow ${availableStock > 0 ? 'bg-purple-600 hover:bg-purple-700 active:scale-95' : 'bg-slate-300 cursor-not-allowed'}">
-                            ${availableStock > 0 ? '+ ใส่ตะกร้า' : 'สินค้าหมด'}
+                        <button onclick="addToCart('${p.id}')" ${!canBuy ? 'disabled' : ''} 
+                            class="w-full py-2 rounded-xl text-xs font-bold text-white transition-all shadow ${canBuy ? 'bg-purple-600 hover:bg-purple-700 active:scale-95' : 'bg-slate-300 cursor-not-allowed'}">
+                            ${!isStoreOpen ? 'ร้านปิด' : (availableStock > 0 ? '+ ใส่ตะกร้า' : 'สินค้าหมด')}
                         </button>
                     </div>
                 </div>
@@ -262,6 +336,10 @@
 
         // 🛒 Cart Logic
         function addToCart(productId) {
+            if (!isStoreOpen) {
+                alert("ร้านปิดรับออเดอร์อยู่ครับ!");
+                return;
+            }
             const product = products.find(p => p.id === productId);
             if (!product) return;
 
@@ -347,6 +425,10 @@
         // ยืนยันการสั่งซื้อ
         async function checkoutCart(e) {
             e.preventDefault();
+            if (!isStoreOpen) {
+                alert("ขออภัย ร้านปิดรับออเดอร์แล้ว ไม่สามารถสั่งซื้อได้ครับ");
+                return;
+            }
             if (cart.length === 0) {
                 alert("กรุณาเลือกสินค้าใส่ตะกร้าก่อนสั่งซื้อ!");
                 return;
@@ -383,7 +465,7 @@
                 details: { name, room, time, cartItems: cart }
             });
 
-            // 3. บันทึก ID ออเดอร์ลง LocalStorage เครื่องลูกค้าคนนี้
+            // 3. บันทึก ID ลง LocalStorage เครื่องลูกค้า
             saveMyOrderId(orderId);
 
             cart = [];
@@ -408,7 +490,6 @@
             localStorage.setItem('my_fruit_orders', JSON.stringify(current));
         }
 
-        // แสดงผลออเดอร์เฉพาะของลูกค้าเครื่องนี้
         function renderMyOrders() {
             const myIds = getMyOrderIds();
             const myOrders = orders.filter(o => myIds.includes(o.id));
@@ -455,6 +536,8 @@
         });
 
         function renderAdminControls() {
+            renderStoreStatusUI();
+
             const stockGrid = document.getElementById('stockControlGrid');
             stockGrid.innerHTML = products.map(p => `
                 <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center">
@@ -473,11 +556,43 @@
                     <td class="py-2 font-bold text-slate-500">${i + 1}</td>
                     <td class="font-mono text-purple-300 font-semibold text-xs">${o.code}</td>
                     <td class="font-bold text-emerald-400 text-xs">${o.total} ฿</td>
-                    <td class="text-right py-2">
+                    <td class="text-right py-2 flex justify-end gap-1">
+                        <button onclick="openEditModal('${o.id}', '${o.code}', ${o.total})" class="bg-amber-500/80 hover:bg-amber-500 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded transition-colors">แก้ไข</button>
                         <button onclick="deleteOrder('${o.id}')" class="bg-rose-600/80 hover:bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded transition-colors">ลบ</button>
                     </td>
                 </tr>
             `).join('') || '<tr><td colspan="4" class="text-center py-3 text-slate-500">ไม่มีรายการสั่งซื้อ</td></tr>';
+        }
+
+        // ✏️ เปิด/ปิด Modal แก้ไขรายการสั่งซื้อ
+        function openEditModal(id, code, total) {
+            document.getElementById('editOrderId').value = id;
+            document.getElementById('editOrderCode').value = code;
+            document.getElementById('editOrderTotal').value = total;
+            document.getElementById('editOrderModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editOrderModal').classList.add('hidden');
+        }
+
+        async function saveEditOrder() {
+            const id = document.getElementById('editOrderId').value;
+            const newCode = document.getElementById('editOrderCode').value.trim();
+            const newTotal = parseFloat(document.getElementById('editOrderTotal').value);
+
+            if (!newCode || isNaN(newTotal)) {
+                alert("กรุณากรอกข้อมูลให้ครบถ้วน!");
+                return;
+            }
+
+            await db.ref(`orders/${id}`).update({
+                code: newCode,
+                total: newTotal
+            });
+
+            closeEditModal();
+            alert("แก้ไขข้อมูลออเดอร์เรียบร้อยแล้ว!");
         }
 
         async function saveStock() {
