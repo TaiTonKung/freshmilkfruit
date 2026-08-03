@@ -22,7 +22,7 @@
     <!-- Header -->
     <header class="bg-gradient-to-r from-purple-600 via-pink-500 to-rose-500 text-white p-6 text-center shadow-lg relative">
         <h1 class="text-3xl md:text-4xl font-extrabold tracking-wide">🍓 FRESH MILK FRUIT</h1>
-        <p class="text-sm opacity-90 mt-1">รับของวันที่ 06/08/2026 ห้อง 163</p>
+        <p class="text-sm opacity-90 mt-1">รับของวันที่ 06/08/2026</p>
         
         <!-- สถานะจุดเขียววิบวับ -->
         <div class="mt-2 inline-flex items-center gap-2 bg-black/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
@@ -115,7 +115,7 @@
 
     </main>
 
-    <!-- Modal กรอกรหัสผ่านแอดมิน (แบบใหม่ เสถียร ลื่น กดทีเดียวติด) -->
+    <!-- Modal กรอกรหัสผ่านแอดมิน -->
     <div id="passModal" class="fixed inset-0 bg-black/70 hidden flex justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xs w-full p-5 shadow-2xl text-slate-100 text-center space-y-4">
             <h3 class="font-bold text-base text-amber-400">🔒 ยืนยันตัวตนเจ้าของร้าน</h3>
@@ -323,7 +323,7 @@
             refreshAll();
         }
 
-        // Admin Password Verification (ระบบป๊อปอัปใหม่ ไร้บั๊ก)
+        // Admin Password Verification
         function openAdminPasswordModal() {
             document.getElementById('adminPassInput').value = '';
             document.getElementById('passModal').classList.remove('hidden');
@@ -350,7 +350,6 @@
             document.getElementById('adminSection').classList.add('hidden');
         }
 
-        // กด Enter ในช่องใส่รหัสผ่านแอดมินให้ทำงานทันที
         document.getElementById('adminPassInput').addEventListener('keyup', (e) => {
             if (e.key === 'Enter') verifyAdminPass();
         });
