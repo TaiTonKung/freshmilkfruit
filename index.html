@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fresh Milk Fruit - ระบบสั่งซื้อ Realtime</title>
+    <title>Fresh Milk Fruit - ระบบสั่งซื้อแบบตะกร้าสินค้า</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style> 
@@ -21,7 +21,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen pb-12 select-none">
+<body class="bg-slate-100 text-slate-800 min-h-screen pb-24 select-none">
 
     <!-- Header -->
     <header class="bg-gradient-to-r from-purple-600 via-pink-500 to-rose-500 text-white p-6 text-center shadow-lg relative">
@@ -40,24 +40,26 @@
 
     <main class="max-w-4xl mx-auto px-4 mt-6 space-y-8">
 
-        <!-- 1. รายการสินค้า -->
+        <!-- 1. รายการสินค้า (Shopping Cards) -->
         <section>
-            <h2 class="text-xl font-bold mb-4 text-slate-800">รายการเมนูคงเหลือ (Stock)</h2>
+            <h2 class="text-xl font-bold mb-4 text-slate-800 flex items-center gap-2">
+                <span>🛍️</span> เมนูเครื่องดื่มทั้งหมด
+            </h2>
             <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div class="col-span-4 text-center py-8 text-slate-400">กำลังโหลดข้อมูลสต็อก...</div>
             </div>
         </section>
 
-        <!-- 2. ตรวจสอบรายการสั่งซื้อ -->
+        <!-- 2. ตรวจสอบรายการสั่งซื้อทั้งหมด -->
         <section class="bg-white rounded-2xl shadow p-6 border border-slate-100">
-            <h3 class="font-bold text-lg text-slate-800 mb-1">📋 ตรวจสอบรายการสั่งซื้อทั้งหมด (เช็กรายชื่อที่นี่)</h3>
-            <p class="text-xs text-slate-400 mb-4">รูปแบบ: ชื่อ/ห้อง/เวลา/เมนู</p>
+            <h3 class="font-bold text-lg text-slate-800 mb-1">📋 ตรวจสอบรายการสั่งซื้อทั้งหมด</h3>
+            <p class="text-xs text-slate-400 mb-4">รูปแบบ: ชื่อ / ห้อง / เวลา / รายการสินค้าและจำนวน</p>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm border-collapse">
                     <thead>
                         <tr class="text-slate-400 border-b border-slate-200">
                             <th class="pb-2">#</th>
-                            <th class="pb-2">รายการบันทึก</th>
+                            <th class="pb-2">รายการบันทึกออเดอร์</th>
                             <th class="pb-2">ราคารวม</th>
                         </tr>
                     </thead>
@@ -68,7 +70,7 @@
             </div>
         </section>
 
-        <!-- ปุ่มแอดมิน -->
+        <!-- ปุ่มเข้าแผงแอดมิน -->
         <div class="text-center pt-4">
             <button onclick="openAdminPasswordModal()" class="bg-slate-800 hover:bg-slate-900 text-slate-200 text-xs px-4 py-2 rounded-xl shadow transition-all active:scale-95">
                 🔒 สำหรับเจ้าของร้าน (จัดการสต็อก / แก้ไข / ลบข้อมูล)
@@ -92,7 +94,7 @@
 
             <div>
                 <div class="flex justify-between items-center mb-3">
-                    <h4 class="text-sm font-bold text-amber-400">✏️ จัดการ แก้ไข และลบรายการสั่งซื้อ</h4>
+                    <h4 class="text-sm font-bold text-amber-400">✏️ จัดการ และลบรายการสั่งซื้อ</h4>
                     <button onclick="clearAllOrders()" class="text-xs text-rose-400 hover:underline">ล้างข้อมูลทั้งหมด</button>
                 </div>
                 <div class="overflow-x-auto">
@@ -113,7 +115,61 @@
 
     </main>
 
-    <!-- Modals -->
+    <!-- 🛒 ปุ่มเปิดตะกร้าลอยด้านล่าง (Floating Cart Button) -->
+    <div class="fixed bottom-5 right-5 z-40">
+        <button onclick="toggleCartModal()" class="relative bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transition-transform active:scale-90">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
+            <span id="cartBadge" class="absolute -top-1 -right-1 bg-rose-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white hidden">0</span>
+        </button>
+    </div>
+
+    <!-- 🛒 Modal ตะกร้าสินค้าและการชำระเงิน (Cart Drawer / Modal) -->
+    <div id="cartModal" class="fixed inset-0 bg-black/60 hidden flex justify-center items-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center border-b pb-3 mb-3">
+                <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">🛒 ตะกร้าสินค้าของคุณ</h3>
+                <button onclick="toggleCartModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+            </div>
+
+            <!-- รายการในตะกร้า -->
+            <div id="cartItemsList" class="flex-1 overflow-y-auto space-y-3 pr-1 mb-4">
+                <div class="text-center py-8 text-slate-400 text-sm">ยังไม่มีสินค้าในตะกร้า</div>
+            </div>
+
+            <!-- ฟอร์มกรอกข้อมูลการจัดส่ง -->
+            <form onsubmit="checkoutCart(event)" class="space-y-3 border-t pt-3">
+                <div class="grid grid-cols-3 gap-2 text-xs">
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-0.5">ชื่อของคุณ</label>
+                        <input type="text" id="custName" required placeholder="เช่น ไตตั้น" class="w-full p-2 border border-slate-300 rounded-lg outline-none focus:ring-1 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-0.5">ห้อง</label>
+                        <input type="text" id="custRoom" required placeholder="เช่น 163" class="w-full p-2 border border-slate-300 rounded-lg outline-none focus:ring-1 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-slate-400 mb-0.5">เวลาส่ง</label>
+                        <select id="custTime" class="w-full p-2 border border-slate-300 rounded-lg outline-none focus:ring-1 focus:ring-purple-500">
+                            <option value="เช้า">เช้า</option>
+                            <option value="กลางวัน">กลางวัน</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center bg-purple-50 p-3 rounded-xl border border-purple-100">
+                    <span class="text-sm font-bold text-purple-900">ยอดรวมทั้งหมด:</span>
+                    <span class="text-xl font-extrabold text-purple-600"><span id="cartTotalPrice">0</span> ฿</span>
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="button" onclick="toggleCartModal()" class="w-1/3 py-2.5 border rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50">เลือกสินค้าเพิ่ม</button>
+                    <button type="submit" id="btnCheckout" class="w-2/3 py-2.5 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white rounded-xl text-xs font-bold shadow-md transition-all active:scale-95">ยืนยันสั่งซื้อสินค้า</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Pass Modal -->
     <div id="passModal" class="fixed inset-0 bg-black/70 hidden flex justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xs w-full p-5 shadow-2xl text-slate-100 text-center space-y-4">
             <h3 class="font-bold text-base text-amber-400">🔒 ยืนยันตัวตนเจ้าของร้าน</h3>
@@ -126,94 +182,8 @@
         </div>
     </div>
 
-    <div id="orderModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center p-4 z-50 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl">
-            <h3 class="font-bold text-lg mb-1">สั่งซื้อ: <span id="modalProductName" class="text-purple-600"></span></h3>
-            <p class="text-xs text-slate-400 mb-3">คงเหลือในสต็อก: <span id="modalStockLeft" class="font-bold text-emerald-600">0</span> ขวด</p>
-
-            <form onsubmit="placeOrder(event)" class="space-y-3">
-                <div class="flex justify-between items-center bg-slate-50 p-2 rounded-lg border border-slate-200">
-                    <span class="text-sm font-semibold text-slate-600">จำนวนที่ต้องการ:</span>
-                    <div class="flex gap-2 items-center">
-                        <button type="button" onclick="changeQty(-1)" class="w-7 h-7 bg-white border border-slate-300 font-bold rounded hover:bg-slate-100">-</button>
-                        <span id="productQty" class="font-bold w-4 text-center">1</span>
-                        <button type="button" onclick="changeQty(1)" class="w-7 h-7 bg-white border border-slate-300 font-bold rounded hover:bg-slate-100">+</button>
-                    </div>
-                </div>
-                <div class="grid grid-cols-3 gap-2 text-xs">
-                    <div>
-                        <label class="block text-[10px] text-slate-400 mb-0.5">ชื่อ</label>
-                        <input type="text" id="custName" required placeholder="ยิม" class="w-full p-2 border border-slate-300 rounded outline-none focus:ring-1 focus:ring-purple-500">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-slate-400 mb-0.5">ห้อง</label>
-                        <input type="text" id="custRoom" required placeholder="163" class="w-full p-2 border border-slate-300 rounded outline-none focus:ring-1 focus:ring-purple-500">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-slate-400 mb-0.5">เวลา</label>
-                        <select id="custTime" class="w-full p-2 border border-slate-300 rounded outline-none focus:ring-1 focus:ring-purple-500">
-                            <option value="เช้า">เช้า</option>
-                            <option value="กลางวัน">กลางวัน</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="text-right font-bold text-emerald-600 text-lg">รวม: <span id="totalPrice">0</span> ฿</div>
-                <div class="flex gap-2">
-                    <button type="button" onclick="closeModal()" class="w-1/2 py-2 border rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50">ยกเลิก</button>
-                    <button type="submit" id="btnSubmitOrder" class="w-1/2 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold transition-colors">ยืนยันสั่งซื้อ</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="editOrderModal" class="fixed inset-0 bg-black/60 hidden flex justify-center items-center p-4 z-50 backdrop-blur-sm">
-        <div class="bg-slate-900 border border-slate-700 text-slate-100 rounded-2xl max-w-sm w-full p-5 shadow-2xl">
-            <h3 class="font-bold text-lg mb-3 text-amber-400">✏️ แก้ไขรายการสั่งซื้อ</h3>
-
-            <form onsubmit="saveEditOrder(event)" class="space-y-3 text-xs">
-                <div>
-                    <label class="block text-slate-400 mb-1">ชื่อลูกค้า</label>
-                    <input type="text" id="editCustName" required class="w-full p-2 bg-slate-950 border border-slate-700 rounded text-slate-100 outline-none focus:ring-1 focus:ring-amber-400">
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-slate-400 mb-1">ห้อง</label>
-                        <input type="text" id="editCustRoom" required class="w-full p-2 bg-slate-950 border border-slate-700 rounded text-slate-100 outline-none focus:ring-1 focus:ring-amber-400">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">เวลาส่ง</label>
-                        <select id="editCustTime" class="w-full p-2 bg-slate-950 border border-slate-700 rounded text-slate-100 outline-none focus:ring-1 focus:ring-amber-400">
-                            <option value="เช้า">เช้า</option>
-                            <option value="กลางวัน">กลางวัน</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-slate-400 mb-1">เมนูสินค้า</label>
-                        <select id="editProductSelect" onchange="updateEditPrice()" class="w-full p-2 bg-slate-950 border border-slate-700 rounded text-slate-100 outline-none focus:ring-1 focus:ring-amber-400"></select>
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">จำนวน (ขวด)</label>
-                        <input type="number" id="editQty" min="1" required onchange="updateEditPrice()" onkeyup="updateEditPrice()" class="w-full p-2 bg-slate-950 border border-slate-700 rounded text-slate-100 outline-none focus:ring-1 focus:ring-amber-400">
-                    </div>
-                </div>
-
-                <div class="text-right font-bold text-emerald-400 text-base pt-2">
-                    ราคารวมใหม่: <span id="editTotalPrice">0</span> ฿
-                </div>
-
-                <div class="flex gap-2 pt-2">
-                    <button type="button" onclick="closeEditModal()" class="w-1/2 py-2 border border-slate-600 rounded-lg text-slate-400 hover:bg-slate-800">ยกเลิก</button>
-                    <button type="submit" class="w-1/2 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-lg font-bold transition-colors">บันทึกแก้ไข</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- JavaScript + Realtime Database -->
+    <!-- JavaScript + Realtime Database & Cart Logic -->
     <script>
-        // 🔑 ใส่ Key ของ Firebase เรียบร้อยแล้ว
         const firebaseConfig = {
             apiKey: "AIzaSyBI8prK3gpAIRGmu5FWrQD9zG2bSCVwqk0",
             authDomain: "fresh-milk-fruit.firebaseapp.com",
@@ -225,7 +195,6 @@
             measurementId: "G-LTQ5EXG6MN"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
@@ -239,11 +208,9 @@
 
         let products = [];
         let orders = [];
-        let selectedProduct = null;
-        let qty = 1;
-        let currentEditingOrderId = null;
+        let cart = []; // [{ id, name, price, qty, stock }]
 
-        // 🔄 ดึงข้อมูล Realtime จาก Cloud
+        // 🔄 ดึงข้อมูล Realtime
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val();
             if (!data) {
@@ -253,6 +220,7 @@
                 products = data;
             }
             renderProducts();
+            renderCartUI();
             if (!document.getElementById('adminSection').classList.contains('hidden')) renderAdminControls();
         });
 
@@ -263,10 +231,15 @@
             if (!document.getElementById('adminSection').classList.contains('hidden')) renderAdminControls();
         });
 
-        // Render UI
+        // แสดงผลสินค้า
         function renderProducts() {
             const grid = document.getElementById('productGrid');
-            grid.innerHTML = products.map(p => `
+            grid.innerHTML = products.map(p => {
+                const cartItem = cart.find(item => item.id === p.id);
+                const inCartQty = cartItem ? cartItem.qty : 0;
+                const availableStock = p.stock - inCartQty;
+
+                return `
                 <div class="bg-white p-4 rounded-2xl shadow border border-slate-100 text-center flex flex-col justify-between transition-transform active:scale-98">
                     <div>
                         <span class="text-4xl block mb-1">${p.icon}</span>
@@ -277,81 +250,171 @@
                         <span class="text-xs ${p.stock > 0 ? 'bg-slate-100 text-slate-600' : 'bg-rose-100 text-rose-600'} px-2 py-1 rounded-full block mb-3 font-semibold">
                             ${p.stock > 0 ? 'เหลือ ' + p.stock + ' ขวด' : 'สินค้าหมด'}
                         </span>
-                        <button onclick="openModal('${p.id}')" ${p.stock <= 0 ? 'disabled' : ''} 
-                            class="w-full py-1.5 rounded-xl text-xs font-bold text-white transition-all ${p.stock > 0 ? 'bg-purple-600 hover:bg-purple-700 active:scale-95' : 'bg-slate-300 cursor-not-allowed'}">
-                            ${p.stock > 0 ? 'สั่งซื้อ' : 'หมด'}
+                        <button onclick="addToCart('${p.id}')" ${availableStock <= 0 ? 'disabled' : ''} 
+                            class="w-full py-2 rounded-xl text-xs font-bold text-white transition-all shadow ${availableStock > 0 ? 'bg-purple-600 hover:bg-purple-700 active:scale-95' : 'bg-slate-300 cursor-not-allowed'}">
+                            ${availableStock > 0 ? '+ ใส่ตะกร้า' : 'สินค้าหมด'}
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
-        function renderClientOrders() {
-            const tbody = document.getElementById('clientOrderTable');
-            tbody.innerHTML = orders.map((o, i) => `
-                <tr class="border-b border-slate-100">
-                    <td class="py-2.5 font-bold text-slate-400">${i + 1}</td>
-                    <td class="font-mono text-purple-600 font-semibold">${o.code}</td>
-                    <td class="font-bold text-emerald-600">${o.total} ฿</td>
-                </tr>
-            `).join('') || '<tr><td colspan="3" class="text-center py-4 text-slate-400">ยังไม่มีรายการสั่งซื้อ</td></tr>';
-        }
+        // 🛒 ตะกร้าสินค้า (Cart Logic)
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
 
-        // Customer Logic
-        function openModal(productId) {
-            selectedProduct = products.find(p => p.id === productId);
-            qty = 1;
-            document.getElementById('modalProductName').innerText = selectedProduct.name;
-            document.getElementById('modalStockLeft').innerText = selectedProduct.stock;
-            document.getElementById('productQty').innerText = qty;
-            updateTotal();
-            document.getElementById('orderModal').classList.remove('hidden');
-        }
-
-        function closeModal() { document.getElementById('orderModal').classList.add('hidden'); }
-
-        function changeQty(amt) {
-            if (qty + amt >= 1 && qty + amt <= selectedProduct.stock) {
-                qty += amt;
-                document.getElementById('productQty').innerText = qty;
-                updateTotal();
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                if (existingItem.qty < product.stock) {
+                    existingItem.qty += 1;
+                } else {
+                    alert("ขออภัย จำนวนสินค้าในสต็อกไม่พอ");
+                    return;
+                }
+            } else {
+                cart.push({ ...product, qty: 1 });
             }
+
+            renderProducts();
+            renderCartUI();
         }
 
-        function updateTotal() {
-            document.getElementById('totalPrice').innerText = selectedProduct.price * qty;
+        function updateCartQty(productId, delta) {
+            const item = cart.find(i => i.id === productId);
+            const product = products.find(p => p.id === productId);
+            if (!item || !product) return;
+
+            item.qty += delta;
+            if (item.qty > product.stock) {
+                item.qty = product.stock;
+                alert("จำนวนสินค้าสูงสุดตามสต็อกที่มีอยู่");
+            }
+
+            if (item.qty <= 0) {
+                cart = cart.filter(i => i.id !== productId);
+            }
+
+            renderProducts();
+            renderCartUI();
         }
 
-        async function placeOrder(e) {
+        function removeFromCart(productId) {
+            cart = cart.filter(i => i.id !== productId);
+            renderProducts();
+            renderCartUI();
+        }
+
+        function renderCartUI() {
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            
+            // Badge
+            const badge = document.getElementById('cartBadge');
+            if (totalItems > 0) {
+                badge.innerText = totalItems;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            // List in Modal
+            const list = document.getElementById('cartItemsList');
+            if (cart.length === 0) {
+                list.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">ยังไม่มีสินค้าในตะกร้า</div>`;
+            } else {
+                list.innerHTML = cart.map(item => `
+                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${item.icon}</span>
+                            <div>
+                                <h4 class="font-bold text-xs text-slate-800">${item.name}</h4>
+                                <span class="text-[10px] text-slate-500">${item.price} ฿ / ขวด</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center bg-white border border-slate-300 rounded-lg overflow-hidden">
+                                <button type="button" onclick="updateCartQty('${item.id}', -1)" class="px-2 py-0.5 font-bold hover:bg-slate-100 text-xs">-</button>
+                                <span class="px-2 font-bold text-xs">${item.qty}</span>
+                                <button type="button" onclick="updateCartQty('${item.id}', 1)" class="px-2 py-0.5 font-bold hover:bg-slate-100 text-xs">+</button>
+                            </div>
+                            <span class="font-bold text-xs text-purple-600 w-12 text-right">${item.price * item.qty}฿</span>
+                            <button type="button" onclick="removeFromCart('${item.id}')" class="text-rose-500 hover:text-rose-700 text-xs font-bold ml-1">✕</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('cartTotalPrice').innerText = totalPrice;
+        }
+
+        function toggleCartModal() {
+            document.getElementById('cartModal').classList.toggle('hidden');
+        }
+
+        // ยืนยันสั่งซื้อสินค้าในตะกร้า (Checkout)
+        async function checkoutCart(e) {
             e.preventDefault();
-            const btn = document.getElementById('btnSubmitOrder');
+            if (cart.length === 0) {
+                alert("กรุณาเลือกสินค้าใส่ตะกร้าก่อนสั่งซื้อครับ!");
+                return;
+            }
+
+            const btn = document.getElementById('btnCheckout');
             btn.disabled = true;
-            btn.innerText = "กำลังสั่ง...";
+            btn.innerText = "กำลังสั่งซื้อ...";
 
             const name = document.getElementById('custName').value.trim();
             const room = document.getElementById('custRoom').value.trim();
             const time = document.getElementById('custTime').value;
 
-            // ตัดสต็อกใน Cloud
-            const pIndex = products.findIndex(p => p.id === selectedProduct.id);
-            products[pIndex].stock -= qty;
+            // 1. สร้าง String สรุปเมนูสินค้า เช่น "สตรอเบอร์รี่ 2 พีช 2"
+            const itemsSummary = cart.map(item => `${item.name} ${item.qty}`).join(' ');
+            
+            // 2. สร้าง Code รูปแบบ: "ไตตั้น / 163 / เช้า / สตรอเบอร์รี่ 2 พีช 2"
+            const orderCode = `${name} / ${room} / ${time} / ${itemsSummary}`;
+            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            // 3. ตัดสต็อกสินค้าใน Firebase Cloud
+            cart.forEach(cartItem => {
+                const pIndex = products.findIndex(p => p.id === cartItem.id);
+                if (pIndex !== -1) {
+                    products[pIndex].stock -= cartItem.qty;
+                    if (products[pIndex].stock < 0) products[pIndex].stock = 0;
+                }
+            });
             await db.ref('products').set(products);
 
-            // ส่งคำสั่งซื้อขึ้น Cloud
-            const orderCode = `${name}/${room}/${time}/${selectedProduct.name}${qty}`;
+            // 4. บันทึกคำสั่งซื้อเข้า Database
             await db.ref('orders').push({
                 code: orderCode,
-                total: selectedProduct.price * qty,
-                details: { name, room, time, productName: selectedProduct.name, qty }
+                total: totalAmount,
+                details: { name, room, time, cartItems: cart }
             });
 
+            // ล้างตะกร้า ปิด Modal
+            cart = [];
+            renderProducts();
+            renderCartUI();
             btn.disabled = false;
-            btn.innerText = "ยืนยันสั่งซื้อ";
-            alert("สั่งซื้อสำเร็จ! ข้อมูลถูกส่งไปหน้าแอดมินแล้ว");
-            closeModal();
+            btn.innerText = "ยืนยันสั่งซื้อสินค้า";
+            toggleCartModal();
+            alert("สั่งซื้อสำเร็จเรียบร้อยแล้ว!");
         }
 
-        // Admin Logic
+        // แสดงผลรายการสั่งซื้อทั้งหมด (Client View)
+        function renderClientOrders() {
+            const tbody = document.getElementById('clientOrderTable');
+            tbody.innerHTML = orders.map((o, i) => `
+                <tr class="border-b border-slate-100">
+                    <td class="py-2.5 font-bold text-slate-400">${i + 1}</td>
+                    <td class="font-semibold text-purple-700 font-mono text-xs md:text-sm">${o.code}</td>
+                    <td class="font-bold text-emerald-600">${o.total} ฿</td>
+                </tr>
+            `).join('') || '<tr><td colspan="3" class="text-center py-4 text-slate-400">ยังไม่มีรายการสั่งซื้อ</td></tr>';
+        }
+
+        // Admin Modal & Operations
         function openAdminPasswordModal() {
             document.getElementById('adminPassInput').value = '';
             document.getElementById('passModal').classList.remove('hidden');
@@ -394,64 +457,13 @@
             tbody.innerHTML = orders.map((o, i) => `
                 <tr class="border-b border-slate-800">
                     <td class="py-2 font-bold text-slate-500">${i + 1}</td>
-                    <td class="font-mono text-purple-300 font-semibold">${o.code}</td>
-                    <td class="font-bold text-emerald-400">${o.total} ฿</td>
-                    <td class="text-right flex justify-end gap-1.5 py-2">
-                        <button onclick="openEditModal('${o.id}')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded transition-colors">แก้ไข</button>
+                    <td class="font-mono text-purple-300 font-semibold text-xs">${o.code}</td>
+                    <td class="font-bold text-emerald-400 text-xs">${o.total} ฿</td>
+                    <td class="text-right py-2">
                         <button onclick="deleteOrder('${o.id}')" class="bg-rose-600/80 hover:bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded transition-colors">ลบ</button>
                     </td>
                 </tr>
             `).join('') || '<tr><td colspan="4" class="text-center py-3 text-slate-500">ไม่มีรายการสั่งซื้อ</td></tr>';
-        }
-
-        function openEditModal(orderId) {
-            const order = orders.find(o => o.id === orderId);
-            if (!order) return;
-            currentEditingOrderId = orderId;
-            const details = order.details || { name: '', room: '', time: 'เช้า', productName: 'สตรอเบอร์รี่', qty: 1 };
-
-            document.getElementById('editCustName').value = details.name;
-            document.getElementById('editCustRoom').value = details.room;
-            document.getElementById('editCustTime').value = details.time;
-            document.getElementById('editQty').value = details.qty;
-
-            const select = document.getElementById('editProductSelect');
-            select.innerHTML = products.map(p => `<option value="${p.name}">${p.name} (${p.price}฿)</option>`).join('');
-            select.value = details.productName;
-
-            updateEditPrice();
-            document.getElementById('editOrderModal').classList.remove('hidden');
-        }
-
-        function closeEditModal() { document.getElementById('editOrderModal').classList.add('hidden'); }
-
-        function updateEditPrice() {
-            const pName = document.getElementById('editProductSelect').value;
-            const q = parseInt(document.getElementById('editQty').value) || 0;
-            const p = products.find(item => item.name === pName);
-            document.getElementById('editTotalPrice').innerText = (p ? p.price : 25) * q;
-        }
-
-        async function saveEditOrder(e) {
-            e.preventDefault();
-            const name = document.getElementById('editCustName').value.trim();
-            const room = document.getElementById('editCustRoom').value.trim();
-            const time = document.getElementById('editCustTime').value;
-            const pName = document.getElementById('editProductSelect').value;
-            const q = parseInt(document.getElementById('editQty').value) || 1;
-
-            const p = products.find(item => item.name === pName);
-            const newTotal = (p ? p.price : 25) * q;
-            const newCode = `${name}/${room}/${time}/${pName}${q}`;
-
-            await db.ref(`orders/${currentEditingOrderId}`).set({
-                code: newCode,
-                total: newTotal,
-                details: { name, room, time, productName: pName, qty: q }
-            });
-
-            alert("แก้ไขข้อมูลใน Cloud เรียบร้อยแล้ว!");
-            closeEditModal();
         }
 
         async function saveStock() {
