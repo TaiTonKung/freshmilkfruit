@@ -6,14 +6,32 @@
     <title>Fresh Milk Fruit - ระบบสั่งซื้อและจัดการสินค้า</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style> body { font-family: 'Kanit', sans-serif; } </style>
+    <style> 
+        body { font-family: 'Kanit', sans-serif; }
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.15); }
+        }
+        .animate-pulse-green {
+            animation: pulse-fast 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen pb-12">
+<body class="bg-slate-100 text-slate-800 min-h-screen pb-12 select-none">
 
     <!-- Header -->
-    <header class="bg-gradient-to-r from-purple-600 via-pink-500 to-rose-500 text-white p-6 text-center shadow-lg">
+    <header class="bg-gradient-to-r from-purple-600 via-pink-500 to-rose-500 text-white p-6 text-center shadow-lg relative">
         <h1 class="text-3xl md:text-4xl font-extrabold tracking-wide">🍓 FRESH MILK FRUIT</h1>
         <p class="text-sm opacity-90 mt-1">รับของวันที่ 06/08/2026 ห้อง 163</p>
+        
+        <!-- สถานะจุดเขียววิบวับ -->
+        <div class="mt-2 inline-flex items-center gap-2 bg-black/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 animate-pulse-green"></span>
+            </span>
+            <span class="text-xs font-medium text-emerald-200 tracking-wider">สถานะ: เชื่อมต่อเสถียร อัปเดตตลอดเวลา</span>
+        </div>
     </header>
 
     <main class="max-w-4xl mx-auto px-4 mt-6 space-y-8">
@@ -26,7 +44,7 @@
             </div>
         </section>
 
-        <!-- 2. ส่วนลูกค้า: ตรวจสอบรายการสั่งซื้อ (แก้ไขคำเรียบร้อย) -->
+        <!-- 2. ส่วนลูกค้า: ตรวจสอบรายการสั่งซื้อ -->
         <section class="bg-white rounded-2xl shadow p-6 border border-slate-100">
             <h3 class="font-bold text-lg text-slate-800 mb-1">📋 ตรวจสอบรายการสั่งซื้อทั้งหมด (เช็กรายชื่อที่นี่)</h3>
             <p class="text-xs text-slate-400 mb-4">รูปแบบ: ชื่อ/ห้อง/เวลา/เมนู</p>
@@ -48,8 +66,8 @@
 
         <!-- ปุ่มเปิดโหมดเจ้าของร้าน -->
         <div class="text-center pt-4">
-            <button onclick="toggleAdminPanel()" class="bg-slate-800 hover:bg-slate-900 text-slate-200 text-xs px-4 py-2 rounded-xl shadow transition-colors">
-                🔒 สำหรับเจ้าของร้าน (จัดการสต็อก / ลบข้อมูล)
+            <button onclick="openAdminPasswordModal()" class="bg-slate-800 hover:bg-slate-900 text-slate-200 text-xs px-4 py-2 rounded-xl shadow transition-all active:scale-95">
+                🔒 สำหรับเจ้าของร้าน (จัดการสต็อก / แก้ไข / ลบข้อมูล)
             </button>
         </div>
 
@@ -57,7 +75,7 @@
         <section id="adminSection" class="bg-slate-900 text-slate-100 rounded-2xl shadow-xl p-6 hidden space-y-6 border border-slate-700">
             <div class="flex justify-between items-center border-b border-slate-700 pb-3">
                 <h3 class="font-bold text-lg text-amber-400">⚙️ แผงควบคุมเจ้าของร้าน</h3>
-                <button onclick="toggleAdminPanel()" class="text-xs text-slate-400 hover:text-white">✕ ปิดหน้าแอดมิน</button>
+                <button onclick="closeAdminPanel()" class="text-xs text-slate-400 hover:text-white">✕ ปิดหน้าแอดมิน</button>
             </div>
 
             <!-- จัดการสต็อก -->
@@ -66,7 +84,7 @@
                 <div id="stockControlGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <!-- Dynamic Stock Inputs -->
                 </div>
-                <button onclick="saveStock()" class="mt-3 w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2 rounded-xl text-xs transition-colors">
+                <button onclick="saveStock()" class="mt-3 w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2 rounded-xl text-xs transition-all active:scale-98">
                     💾 บันทึกจำนวนสต็อกใหม่
                 </button>
             </div>
@@ -74,7 +92,7 @@
             <!-- แก้ไข/ลบรายการ -->
             <div>
                 <div class="flex justify-between items-center mb-3">
-                    <h4 class="text-sm font-bold text-rose-400">🗑️ จัดการและลบรายการสั่งซื้อ</h4>
+                    <h4 class="text-sm font-bold text-amber-400">✏️ จัดการ แก้ไข และลบรายการสั่งซื้อ</h4>
                     <button onclick="clearAllOrders()" class="text-xs text-rose-400 hover:underline">ล้างข้อมูลทั้งหมด</button>
                 </div>
                 <div class="overflow-x-auto">
@@ -97,8 +115,21 @@
 
     </main>
 
-    <!-- Modal ฟอร์มสั่งซื้อ -->
-    <div id="orderModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center p-4 z-50">
+    <!-- Modal กรอกรหัสผ่านแอดมิน (แบบใหม่ เสถียร ลื่น กดทีเดียวติด) -->
+    <div id="passModal" class="fixed inset-0 bg-black/70 hidden flex justify-center items-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xs w-full p-5 shadow-2xl text-slate-100 text-center space-y-4">
+            <h3 class="font-bold text-base text-amber-400">🔒 ยืนยันตัวตนเจ้าของร้าน</h3>
+            <p class="text-xs text-slate-400">กรุณากรอกรหัสผ่านเพื่อเข้าสู่แผงควบคุม</p>
+            <input type="password" id="adminPassInput" placeholder="กรอกรหัสผ่าน..." class="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-center font-bold text-amber-400 outline-none focus:ring-2 focus:ring-amber-400">
+            <div class="flex gap-2">
+                <button onclick="closePassModal()" class="w-1/2 py-2 border border-slate-700 rounded-xl text-xs text-slate-400">ยกเลิก</button>
+                <button onclick="verifyAdminPass()" class="w-1/2 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs">ตกลง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ฟอร์มสั่งซื้อ (สำหรับลูกค้า) -->
+    <div id="orderModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl">
             <h3 class="font-bold text-lg mb-1">สั่งซื้อ: <span id="modalProductName" class="text-purple-600"></span></h3>
             <p class="text-xs text-slate-400 mb-3">คงเหลือในสต็อก: <span id="modalStockLeft" class="font-bold text-emerald-600">0</span> ขวด</p>
@@ -138,9 +169,57 @@
         </div>
     </div>
 
+    <!-- Modal สำหรับเจ้าของร้านแก้ไขรายการออเดอร์ -->
+    <div id="editOrderModal" class="fixed inset-0 bg-black/60 hidden flex justify-center items-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-700 text-slate-100 rounded-2xl max-w-sm w-full p-5 shadow-2xl">
+            <h3 class="font-bold text-lg mb-3 text-amber-400">✏️ แก้ไขรายการสั่งซื้อ</h3>
+
+            <form onsubmit="saveEditOrder(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">ชื่อลูกค้า</label>
+                    <input type="text" id="editCustName" required class="w-full p-2 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:ring-1 focus:ring-amber-400 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-400 mb-1">ห้อง</label>
+                        <input type="text" id="editCustRoom" required class="w-full p-2 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:ring-1 focus:ring-amber-400 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">เวลาส่ง</label>
+                        <select id="editCustTime" class="w-full p-2 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:ring-1 focus:ring-amber-400 outline-none">
+                            <option value="เช้า">เช้า</option>
+                            <option value="กลางวัน">กลางวัน</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-slate-400 mb-1">เมนูสินค้า</label>
+                        <select id="editProductSelect" onchange="updateEditPrice()" class="w-full p-2 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:ring-1 focus:ring-amber-400 outline-none">
+                            <!-- Dynamic Product Options -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1">จำนวน (ขวด)</label>
+                        <input type="number" id="editQty" min="1" required onchange="updateEditPrice()" onkeyup="updateEditPrice()" class="w-full p-2 bg-slate-950 border border-slate-700 rounded text-slate-100 focus:ring-1 focus:ring-amber-400 outline-none">
+                    </div>
+                </div>
+
+                <div class="text-right font-bold text-emerald-400 text-base pt-2">
+                    ราคารวมใหม่: <span id="editTotalPrice">0</span> ฿
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeEditModal()" class="w-1/2 py-2 border border-slate-600 rounded-lg text-slate-400 hover:bg-slate-800">ยกเลิก</button>
+                    <button type="submit" class="w-1/2 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-lg font-bold transition-colors">บันทึกแก้ไข</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- JavaScript Logic -->
     <script>
-        const ADMIN_PASS = "1234"; // 🔑 รหัสผ่านสำหรับเข้าสู่ระบบแอดมิน
+        const ADMIN_PASS = "SIRINART67PROMAX"; 
 
         const defaultProducts = [
             { id: "strawberry", name: "สตรอเบอร์รี่", price: 25, icon: "🍓", stock: 10, color: "text-purple-600" },
@@ -153,12 +232,20 @@
         let orders = JSON.parse(localStorage.getItem('fmf_orders')) || [];
         let selectedProduct = null;
         let qty = 1;
+        let currentEditingOrderId = null;
 
-        // 1. แสดงผลหน้าลูกค้า
+        // Sync ข้อมูลอัตโนมัติเมื่อมีการเปลี่ยนแปลงใน LocalStorage
+        window.addEventListener('storage', () => {
+            products = JSON.parse(localStorage.getItem('fmf_products')) || defaultProducts;
+            orders = JSON.parse(localStorage.getItem('fmf_orders')) || [];
+            refreshAll();
+        });
+
+        // Render Client View
         function renderProducts() {
             const grid = document.getElementById('productGrid');
             grid.innerHTML = products.map(p => `
-                <div class="bg-white p-4 rounded-2xl shadow border border-slate-100 text-center flex flex-col justify-between">
+                <div class="bg-white p-4 rounded-2xl shadow border border-slate-100 text-center flex flex-col justify-between transition-transform active:scale-98">
                     <div>
                         <span class="text-4xl block mb-1">${p.icon}</span>
                         <span class="font-bold block text-sm">${p.name}</span>
@@ -169,7 +256,7 @@
                             ${p.stock > 0 ? 'เหลือ ' + p.stock + ' ขวด' : 'สินค้าหมด'}
                         </span>
                         <button onclick="openModal('${p.id}')" ${p.stock <= 0 ? 'disabled' : ''} 
-                            class="w-full py-1.5 rounded-xl text-xs font-bold text-white transition-all ${p.stock > 0 ? 'bg-purple-600 hover:bg-purple-700' : 'bg-slate-300 cursor-not-allowed'}">
+                            class="w-full py-1.5 rounded-xl text-xs font-bold text-white transition-all ${p.stock > 0 ? 'bg-purple-600 hover:bg-purple-700 active:scale-95' : 'bg-slate-300 cursor-not-allowed'}">
                             ${p.stock > 0 ? 'สั่งซื้อ' : 'หมด'}
                         </button>
                     </div>
@@ -188,7 +275,7 @@
             `).join('') || '<tr><td colspan="3" class="text-center py-4 text-slate-400">ยังไม่มีรายการสั่งซื้อ</td></tr>';
         }
 
-        // 2. จัดการ Modal การสั่งซื้อ
+        // Customer Order Modal
         function openModal(productId) {
             selectedProduct = products.find(p => p.id === productId);
             qty = 1;
@@ -223,7 +310,12 @@
             localStorage.setItem('fmf_products', JSON.stringify(products));
 
             const orderCode = `${name}/${room}/${time}/${selectedProduct.name}${qty}`;
-            orders.push({ id: Date.now(), code: orderCode, total: selectedProduct.price * qty });
+            orders.push({ 
+                id: Date.now(), 
+                code: orderCode, 
+                total: selectedProduct.price * qty,
+                details: { name, room, time, productName: selectedProduct.name, qty }
+            });
             localStorage.setItem('fmf_orders', JSON.stringify(orders));
 
             alert("บันทึกการสั่งซื้อเรียบร้อยแล้ว!");
@@ -231,24 +323,39 @@
             refreshAll();
         }
 
-        // 3. ระบบจัดการเจ้าของร้าน (Admin Panel)
-        function toggleAdminPanel() {
-            const panel = document.getElementById('adminSection');
-            if (panel.classList.contains('hidden')) {
-                const pwd = prompt("กรุณากรอกรหัสผ่านเจ้าของร้าน:");
-                if (pwd === ADMIN_PASS) {
-                    panel.classList.remove('hidden');
-                    renderAdminControls();
-                } else if (pwd !== null) {
-                    alert("รหัสผ่านไม่ถูกต้อง!");
-                }
+        // Admin Password Verification (ระบบป๊อปอัปใหม่ ไร้บั๊ก)
+        function openAdminPasswordModal() {
+            document.getElementById('adminPassInput').value = '';
+            document.getElementById('passModal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('adminPassInput').focus(), 100);
+        }
+
+        function closePassModal() {
+            document.getElementById('passModal').classList.add('hidden');
+        }
+
+        function verifyAdminPass() {
+            const input = document.getElementById('adminPassInput').value;
+            if (input === ADMIN_PASS) {
+                closePassModal();
+                document.getElementById('adminSection').classList.remove('hidden');
+                renderAdminControls();
+                document.getElementById('adminSection').scrollIntoView({ behavior: 'smooth' });
             } else {
-                panel.classList.add('hidden');
+                alert("รหัสผ่านไม่ถูกต้อง!");
             }
         }
 
+        function closeAdminPanel() {
+            document.getElementById('adminSection').classList.add('hidden');
+        }
+
+        // กด Enter ในช่องใส่รหัสผ่านแอดมินให้ทำงานทันที
+        document.getElementById('adminPassInput').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') verifyAdminPass();
+        });
+
         function renderAdminControls() {
-            // Render Stock Control Inputs
             const stockGrid = document.getElementById('stockControlGrid');
             stockGrid.innerHTML = products.map(p => `
                 <div class="bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center">
@@ -261,20 +368,97 @@
                 </div>
             `).join('');
 
-            // Render Delete Table
             const tbody = document.getElementById('adminOrderTable');
             tbody.innerHTML = orders.map((o, i) => `
                 <tr class="border-b border-slate-800">
                     <td class="py-2 font-bold text-slate-500">${i + 1}</td>
                     <td class="font-mono text-purple-300 font-semibold">${o.code}</td>
                     <td class="font-bold text-emerald-400">${o.total} ฿</td>
-                    <td class="text-right">
+                    <td class="text-right flex justify-end gap-1.5 py-2">
+                        <button onclick="openEditModal(${o.id})" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded transition-colors">
+                            แก้ไข
+                        </button>
                         <button onclick="deleteOrder(${o.id})" class="bg-rose-600/80 hover:bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded transition-colors">
                             ลบ
                         </button>
                     </td>
                 </tr>
             `).join('') || '<tr><td colspan="4" class="text-center py-3 text-slate-500">ไม่มีรายการสั่งซื้อ</td></tr>';
+        }
+
+        // Admin Edit Order System
+        function openEditModal(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+
+            currentEditingOrderId = orderId;
+
+            let details = order.details;
+            if (!details) {
+                const parts = order.code.split('/');
+                const lastPart = parts[3] || '';
+                const match = lastPart.match(/^(.+?)(\d+)$/);
+                details = {
+                    name: parts[0] || '',
+                    room: parts[1] || '',
+                    time: parts[2] || 'เช้า',
+                    productName: match ? match[1] : 'สตรอเบอร์รี่',
+                    qty: match ? parseInt(match[2]) : 1
+                };
+            }
+
+            document.getElementById('editCustName').value = details.name;
+            document.getElementById('editCustRoom').value = details.room;
+            document.getElementById('editCustTime').value = details.time;
+            document.getElementById('editQty').value = details.qty;
+
+            const select = document.getElementById('editProductSelect');
+            select.innerHTML = products.map(p => `<option value="${p.name}">${p.name} (${p.price}฿)</option>`).join('');
+            select.value = details.productName;
+
+            updateEditPrice();
+            document.getElementById('editOrderModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editOrderModal').classList.add('hidden');
+            currentEditingOrderId = null;
+        }
+
+        function updateEditPrice() {
+            const pName = document.getElementById('editProductSelect').value;
+            const q = parseInt(document.getElementById('editQty').value) || 0;
+            const p = products.find(item => item.name === pName);
+            const price = p ? p.price : 25;
+            document.getElementById('editTotalPrice').innerText = price * q;
+        }
+
+        function saveEditOrder(e) {
+            e.preventDefault();
+            const orderIndex = orders.findIndex(o => o.id === currentEditingOrderId);
+            if (orderIndex === -1) return;
+
+            const name = document.getElementById('editCustName').value.trim();
+            const room = document.getElementById('editCustRoom').value.trim();
+            const time = document.getElementById('editCustTime').value;
+            const pName = document.getElementById('editProductSelect').value;
+            const q = parseInt(document.getElementById('editQty').value) || 1;
+
+            const p = products.find(item => item.name === pName);
+            const newTotal = (p ? p.price : 25) * q;
+            const newCode = `${name}/${room}/${time}/${pName}${q}`;
+
+            orders[orderIndex] = {
+                id: currentEditingOrderId,
+                code: newCode,
+                total: newTotal,
+                details: { name, room, time, productName: pName, qty: q }
+            };
+
+            localStorage.setItem('fmf_orders', JSON.stringify(orders));
+            alert("แก้ไขรายการสั่งซื้อเรียบร้อยแล้ว!");
+            closeEditModal();
+            refreshAll();
         }
 
         function saveStock() {
@@ -311,7 +495,6 @@
             }
         }
 
-        // Initialize Page
         refreshAll();
     </script>
 </body>
